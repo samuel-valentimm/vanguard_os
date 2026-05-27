@@ -45,49 +45,149 @@
             <p class="text-xs text-[#71717a] mt-0.5">Controle fino de tamanhos, cores e custos da grade</p>
         </div>
 
-        <div class="bg-[#0e0e11] border border-[#1f1f23] rounded-xl p-5 shadow-2xl">
-            <h3 class="text-xs font-bold uppercase tracking-widest text-white mb-4 border-b border-[#1f1f23] pb-2">Inventário de Itens</h3>
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+              <div class="bg-green-900/20 border border-green-800 text-green-400 p-3 rounded-lg text-xs uppercase tracking-widest font-bold">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse text-xs">
-                    <thead>
-                        <tr class="border-b border-[#1f1f23] text-[#52525b] text-[10px] uppercase tracking-widest font-mono">
-                            <th class="pb-3 px-3">SKU (Código)</th>
-                            <th class="pb-3 px-3 text-center">Ref_ID</th>
-                            <th class="pb-3 px-3">Cor</th>
-                            <th class="pb-3 px-3 text-center">Tam.</th>
-                            <th class="pb-3 px-3 text-right">P. Custo</th>
-                            <th class="pb-3 px-3 text-right">P. Venda</th>
-                            <th class="pb-3 px-3 text-center">Qtd.</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-[#18181b] font-mono text-[#e4e4e7]">
-                        {% if variacoes %}
-                            {% for item in variacoes %}
-                            <tr class="hover:bg-[#18181b]/40 transition text-xs">
-                                <td class="py-3 px-3 font-bold text-white tracking-wider uppercase">{{ item.sku }}</td>
-                                <td class="py-3 px-3 text-center text-[#71717a]">#{{ item.produto_id }}</td>
-                                <td class="py-3 px-3 uppercase text-[#a1a1aa]">{{ item.cor }}</td>
-                                <td class="py-3 px-3 text-center font-bold text-white">{{ item.tamanho }}</td>
-                                <td class="py-3 px-3 text-right text-[#71717a]">R$ {{ "%.2f"|format(item.preco_custo) }}</td>
-                                <td class="py-3 px-3 text-right font-bold text-white">R$ {{ "%.2f"|format(item.preco_venda) }}</td>
-                                <td class="py-3 px-3 text-center">
-                                    <span class="px-2 py-0.5 rounded {% if item.quantidade > 0 %}bg-[#18181b] text-white border border-[#27272a]{% else %}bg-red-950/30 text-red-400 border border-red-900/50{% endif %}">
-                                        {{ item.quantidade }}
-                                    </span>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr>
-                                <td colspan="7" class="py-8 text-center text-[#52525b] italic text-xs uppercase tracking-widest">Nenhum item em estoque.</td>
-                            </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
+            <div class="bg-[#0e0e11] border border-[#1f1f23] rounded-xl p-5 h-fit shadow-xl">
+                <h3 class="text-xs font-bold uppercase tracking-widest text-white mb-4 border-b border-[#1f1f23] pb-2">Novo Produto / Grade</h3>
+                
+                <form action="/produtos/salvar" method="POST" class="space-y-4" id="form-produto">
+                    <div>
+                        <label class="block text-[10px] font-bold text-[#71717a] uppercase tracking-widest mb-1.5">Nome do Produto / Modelo</label>
+                        <input type="text" name="nome_produto" placeholder="EX: CAMISETA OVERSIZED VANGUARD" required
+                            class="w-full bg-[#18181b] border border-[#27272a] rounded-lg px-4 py-2 text-xs uppercase tracking-wider text-white focus:outline-none focus:border-white transition">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] font-bold text-[#71717a] uppercase tracking-widest mb-1.5">Ref_ID (Manual)</label>
+                            <input type="number" name="produto_id" placeholder="Ex: 6" required
+                                class="w-full bg-[#18181b] border border-[#27272a] rounded-lg px-4 py-2 text-xs text-white focus:outline-none focus:border-white transition font-mono">
+                            
+                            <div class="mt-2 bg-[#141416] border border-[#232326] p-3 rounded-lg text-xs text-[#a1a1aa] leading-relaxed">
+                                <strong class="text-white uppercase text-[10px] tracking-wider block mb-1">💡 Como usar?</strong>
+                                <p class="mb-1">• <span class="text-white font-bold">ID Novo</span>: Cria um produto do zero.</p>
+                                <p>• <span class="text-white font-bold">ID Existente</span>: Adiciona nova variação na mesma peça.</p>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-[10px] font-bold text-[#71717a] uppercase tracking-widest mb-1.5">Tamanho</label>
+                            <div class="relative">
+                                <select name="tamanho" required
+                                    class="w-full bg-[#18181b] border border-[#27272a] rounded-lg px-4 py-2 text-xs text-white focus:outline-none focus:border-white transition font-mono uppercase cursor-pointer appearance-none pr-8">
+                                    <option value="" disabled selected>SELECIONE</option>
+                                    <option value="PP">PP</option>
+                                    <option value="P">P</option>
+                                    <option value="M">M</option>
+                                    <option value="G">G</option>
+                                    <option value="GG">GG</option>
+                                    <option value="XGG">XGG</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[#71717a]">
+                                    <span class="text-[9px]">▼</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-bold text-[#71717a] uppercase tracking-widest mb-1.5">Cor</label>
+                        <input type="text" name="cor" placeholder="EX: PRETO" required
+                            class="w-full bg-[#18181b] border border-[#27272a] rounded-lg px-4 py-2 text-xs uppercase tracking-wider text-white focus:outline-none focus:border-white transition">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] font-bold text-[#71717a] uppercase tracking-widest mb-1.5">P. Custo</label>
+                            <input type="number" step="0.01" name="preco_custo" placeholder="0.00" required
+                                class="w-full bg-[#18181b] border border-[#27272a] rounded-lg px-4 py-2 text-xs text-white focus:outline-none focus:border-white transition font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-[#71717a] uppercase tracking-widest mb-1.5">P. Venda</label>
+                            <input type="number" step="0.01" name="preco_venda" placeholder="0.00" required
+                                class="w-full bg-[#18181b] border border-[#27272a] rounded-lg px-4 py-2 text-xs text-white focus:outline-none focus:border-white transition font-mono">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-bold text-[#71717a] uppercase tracking-widest mb-1.5">Quantidade Inicial</label>
+                        <input type="number" name="quantidade" placeholder="Ex: 10" required
+                            class="w-full bg-[#18181b] border border-[#27272a] rounded-lg px-4 py-2 text-xs text-white focus:outline-none focus:border-white transition font-mono">
+                    </div>
+
+                    <button type="submit" class="w-full bg-white hover:bg-[#e4e4e7] text-black font-bold py-2.5 rounded-lg transition text-xs uppercase tracking-widest">
+                        Salvar no Estoque
+                    </button>
+                </form>
             </div>
+
+            <div class="lg:col-span-2 bg-[#0e0e11] border border-[#1f1f23] rounded-xl p-5 shadow-xl">
+                <h3 class="text-xs font-bold uppercase tracking-widest text-white mb-4 border-b border-[#1f1f23] pb-2">Inventário de Itens</h3>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="border-b border-[#1f1f23] text-[#52525b] text-[10px] uppercase tracking-widest font-mono">
+                                <th class="pb-3 px-3">SKU (Código)</th>
+                                <th class="pb-3 px-3 text-center">Ref_ID</th>
+                                <th class="pb-3 px-3">Cor</th>
+                                <th class="pb-3 px-3 text-center">Tam.</th>
+                                <th class="pb-3 px-3 text-right">P. Custo</th>
+                                <th class="pb-3 px-3 text-right">P. Venda</th>
+                                <th class="pb-3 px-3 text-center">Qtd.</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-[#18181b] font-mono text-[#e4e4e7]">
+                            {% if variacoes %}
+                                {% for item in variacoes %}
+                                <tr class="hover:bg-[#18181b]/40 transition text-xs">
+                                    <td class="py-3 px-3 font-bold text-white tracking-wider uppercase">{{ item.sku }}</td>
+                                    <td class="py-3 px-3 text-center text-[#71717a]">#{{ item.produto_id }}</td>
+                                    <td class="py-3 px-3 uppercase text-[#a1a1aa]">{{ item.cor }}</td>
+                                    <td class="py-3 px-3 text-center font-bold text-white">{{ item.tamanho }}</td>
+                                    <td class="py-3 px-3 text-right text-[#71717a]">R$ {{ "%.2f"|format(item.preco_custo) }}</td>
+                                    <td class="py-3 px-3 text-right font-bold text-white">R$ {{ "%.2f"|format(item.preco_venda) }}</td>
+                                    <td class="py-3 px-3 text-center">
+                                        <span class="px-2 py-0.5 rounded {% if item.quantidade > 0 %}bg-[#18181b] text-white border border-[#27272a]{% else %}bg-red-950/30 text-red-400 border border-red-900/50{% endif %}">
+                                            {{ item.quantidade }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="7" class="py-8 text-center text-[#52525b] italic text-xs uppercase tracking-widest">Nenhum item em estoque.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
     </main>
+
+    <script>
+        document.getElementById('form-produto').addEventListener('submit', function(event) {
+            const custo = parseFloat(document.querySelector('input[name="preco_custo"]').value);
+            const venda = parseFloat(document.querySelector('input[name="preco_venda"]').value);
+
+            if (venda <= custo) {
+                alert('Atenção: O preço de venda deve ser maior que o preço de custo!');
+                event.preventDefault(); 
+            }
+        });
+    </script>
 
 </body>
 </html>

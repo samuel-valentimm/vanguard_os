@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, flash, render_template, request, redirect, url_for
 from database import ClienteService, ProdutoService
 
 app = Flask(__name__)
@@ -37,7 +37,6 @@ def visualizar_produtos():
     """Rota para exibir a página de cadastro e a grade de variações do estoque"""
     try: 
         produtos_estoque = ProdutoService.listar_produtos_estoque()
-        # IMPORTANTE: Mudamos de 'estoque=' para 'variacoes=' para conversar com o HTML novo
         return render_template('produtos.html', variacoes=produtos_estoque)
     
     except Exception as e:
@@ -46,15 +45,31 @@ def visualizar_produtos():
 
 @app.route('/produtos/salvar', methods=['POST'])
 def salvar_produto():
-    """Rota que recebe os dados do formulário HTML e salva no banco"""
     try:
-        dados_formulario = request.form.to_dict()
-        ProdutoService.cadastrar_produto_com_grade(dados_formulario)
+        nome = request.form.get('nome_produto', '')
+        cor = request.form.get('cor', '')
+        tamanho = request.form.get('tamanho', '')
+
+        nome_str = str(nome).strip().upper()
+        cor_str = str(cor).strip().upper()
+        tamanho_str = str(tamanho).strip().upper()
+
+        nome_fmt = "-".join(nome_str.split())
+        cor_fmt = "-".join(cor_str.split())
+        sku_gerado = f"{nome_fmt}-{cor_fmt}-{tamanho_str}"
+
+        dados_salvar = request.form.to_dict()
+        dados_salvar['sku'] = sku_gerado
+        
+        dados_salvar.pop('nome_produto', None)
+
+        ProdutoService.cadastrar_produto_com_grade(dados_salvar)
+        flash('Produto cadastrado com sucesso!', 'success')
         return redirect('/produtos')
     
     except Exception as e:
-        return f"Erro ao salvar o produto no estoque: {e}", 500
+        print(f"❌ ERRO DETALHADO: {e}")
+        return f"Erro ao salvar: {e}", 500
     
-
 if __name__ == "__main__":
     app.run(debug=True)
