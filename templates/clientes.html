@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vanguard OS - Clientes</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        header { border-bottom: 2px solid #ff4500; padding-bottom: 10px; margin-bottom: 30px; }
+        h1 { margin: 0; color: #ff4500; }
+        .menu { display: flex; gap: 15px; margin-bottom: 30px; }
+        .btn {
+            background-color: #1e1e1e; color: white; padding: 10px 20px;
+            text-decoration: none; border-radius: 5px; border: 1px solid #333;
+        }
+        .btn:hover { background-color: #ff4500; }
+        
+        /* Estilos do Formulário e Tabela */
+        .grid { display: grid; grid-template-columns: 1fr 2fr; gap: 30px; }
+        .card { background-color: #1e1e1e; padding: 20px; border-radius: 8px; border-top: 4px solid #ff4500; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; color: #bbb; }
+        input[type="text"] {
+            width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #333;
+            background-color: #2a2a2a; color: white; box-sizing: border-box;
+        }
+        .btn-submit {
+            background-color: #ff4500; color: white; border: none; padding: 10px 20px;
+            border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold;
+        }
+        .btn-submit:hover { background-color: #e03d00; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #333; }
+        th { background-color: #2a2a2a; color: #ff4500; }
+        tr:hover { background-color: #252525; }
+
+        /* Estilo do botão de excluir */
+        .btn-deletar {
+            color: #ff4500;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .btn-deletar:hover {
+            text-decoration: underline;
+            color: #ff6a33;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>VANGUARD OS</h1>
+            <p>Gerenciamento de Clientes - Omega Co. (Total: {{ total_clientes }})</p>
+        </header>
+
+            <nav class="menu">
+                <a href="/" class="btn">Início</a>
+                <a href="/clientes" class="btn" style="background-color: #ff4500;">Clientes</a>
+                <a href="#" class="btn">Estoque (SKUs)</a>
+                <a href="#" class="btn">Condicionais</a>
+            </nav>
+
+        <div class="grid">
+            <div class="card">
+                <h2>Novo Cliente</h2>
+                <form action="/adicionar" method="POST">
+                    <div class="form-group">
+                        <label for="nome">Nome Completo</label>
+                        <input type="text" id="nome" name="nome" placeholder="Ex: João Silva" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="telefone">Telefone / WhatsApp</label>
+                        <input type="text" id="telefone" name="telefone" placeholder="Ex: (11) 99999-9999" required>
+                    </div>
+                    <button type="submit" class="btn-submit">Cadastrar Cliente</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>Clientes Cadastrados</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Telefone</th>
+                            <th>Ações</th> </tr>
+                    </thead>
+                    <tbody>
+                        {% for cliente in dados_clientes %}
+                        <tr>
+                            <td>{{ cliente.id }}</td>
+                            <td>{{ cliente.nome }}</td>
+                            <td>{{ cliente.telefone }}</td>
+                            <td>
+                                <a href="/deletar/{{ cliente.id }}" class="btn-deletar" onclick="return confirm('Tem certeza que deseja excluir este cliente?')">Excluir</a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: #888;">Nenhum cliente cadastrado ainda.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

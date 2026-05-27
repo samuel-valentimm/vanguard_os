@@ -1,0 +1,14 @@
+# Banco de dados local
+vanguard_omega.db
+*.db
+
+# Ambiente virtual
+venv/
+ENV/
+
+# Caches do Python
+__pycache__/
+*.pyc
+
+# Configurações e senhas
+.env
