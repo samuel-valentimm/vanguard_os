@@ -4,115 +4,103 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vanguard OS - Clientes</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #121212;
-            color: #ffffff;
-            margin: 0;
-            padding: 20px;
-        }
-        .container { max-width: 1200px; margin: 0 auto; }
-        header { border-bottom: 2px solid #ff4500; padding-bottom: 10px; margin-bottom: 30px; }
-        h1 { margin: 0; color: #ff4500; }
-        .menu { display: flex; gap: 15px; margin-bottom: 30px; }
-        .btn {
-            background-color: #1e1e1e; color: white; padding: 10px 20px;
-            text-decoration: none; border-radius: 5px; border: 1px solid #333;
-        }
-        .btn:hover { background-color: #ff4500; }
-        
-        /* Estilos do Formulário e Tabela */
-        .grid { display: grid; grid-template-columns: 1fr 2fr; gap: 30px; }
-        .card { background-color: #1e1e1e; padding: 20px; border-radius: 8px; border-top: 4px solid #ff4500; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; color: #bbb; }
-        input[type="text"] {
-            width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #333;
-            background-color: #2a2a2a; color: white; box-sizing: border-box;
-        }
-        .btn-submit {
-            background-color: #ff4500; color: white; border: none; padding: 10px 20px;
-            border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold;
-        }
-        .btn-submit:hover { background-color: #e03d00; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #333; }
-        th { background-color: #2a2a2a; color: #ff4500; }
-        tr:hover { background-color: #252525; }
-
-        /* Estilo do botão de excluir */
-        .btn-deletar {
-            color: #ff4500;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .btn-deletar:hover {
-            text-decoration: underline;
-            color: #ff6a33;
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <div class="container">
-        <header>
-            <h1>VANGUARD OS</h1>
-            <p>Gerenciamento de Clientes - Omega Co. (Total: {{ total_clientes }})</p>
-        </header>
+<body class="bg-[#09090b] text-[#f4f4f5] min-h-screen flex antialiased font-sans">
 
-            <nav class="menu">
-                <a href="/" class="btn">Início</a>
-                <a href="/clientes" class="btn" style="background-color: #ff4500;">Clientes</a>
-                <a href="#" class="btn">Estoque (SKUs)</a>
-                <a href="#" class="btn">Condicionais</a>
+    <aside class="w-64 bg-[#0e0e11] border-r border-[#1f1f23] flex flex-col justify-between h-screen sticky top-0">
+        <div>
+            <div class="p-6 flex flex-col justify-center border-b border-[#1f1f23]">
+                <div class="flex items-center space-x-2.5">
+                    <span class="text-xl font-light tracking-widest text-white font-mono">Ω</span>
+                    <h1 class="text-xs font-black tracking-[0.25em] text-white uppercase">Vanguard OS</h1>
+                </div>
+                <p class="text-[9px] text-[#71717a] uppercase tracking-wider mt-1">Omega Co. • Streetwear</p>
+            </div>
+
+            <nav class="p-4 space-y-1">
+                <a href="/" class="flex items-center space-x-3 text-[#a1a1aa] hover:bg-[#18181b] hover:text-white px-4 py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition">
+                    <span>📊</span> <span>Dashboard</span>
+                </a>
+                <a href="/clientes" class="flex items-center space-x-3 bg-white text-black px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition">
+                    <span>👥</span> <span>Clientes</span>
+                </a>
+                <a href="/produtos" class="flex items-center space-x-3 text-[#a1a1aa] hover:bg-[#18181b] hover:text-white px-4 py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition">
+                    <span>📦</span> <span>Estoque / Grade</span>
+                </a>
+                <a href="/condicionais" class="flex items-center space-x-3 text-[#a1a1aa] hover:bg-[#18181b] hover:text-white px-4 py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition">
+                    <span>🛍️</span> <span>Condicionais</span>
+                </a>
             </nav>
+        </div>
 
-        <div class="grid">
-            <div class="card">
-                <h2>Novo Cliente</h2>
-                <form action="/adicionar" method="POST">
-                    <div class="form-group">
-                        <label for="nome">Nome Completo</label>
-                        <input type="text" id="nome" name="nome" placeholder="Ex: João Silva" required>
+        <div class="p-4 border-t border-[#1f1f23]">
+            <p class="text-[9px] text-[#52525b] text-center font-mono tracking-widest uppercase">© 2026 Conect Sistemas</p>
+        </div>
+    </aside>
+
+    <main class="flex-1 p-8 lg:p-10 space-y-8 overflow-y-auto">
+        <div>
+            <h2 class="text-xl font-black text-white uppercase tracking-widest">Base de Clientes</h2>
+            <p class="text-xs text-[#71717a] mt-0.5">Gerenciamento de contatos e compradores</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="bg-[#0e0e11] border border-[#1f1f23] rounded-xl p-5 h-fit">
+                <h3 class="text-xs font-bold uppercase tracking-widest text-white mb-4 border-b border-[#1f1f23] pb-2">Novo Registro</h3>
+                <form action="/clientes" method="POST" class="space-y-4">
+                    <div>
+                        <label class="block text-[9px] font-bold text-[#71717a] uppercase tracking-widest mb-1.5">Nome Completo</label>
+                        <input type="text" name="nome" placeholder="NOME DO PARCEIRO" required
+                            class="w-full bg-[#18181b] border border-[#27272a] rounded-lg px-4 py-2 text-xs uppercase tracking-wider text-white focus:outline-none focus:border-white transition">
                     </div>
-                    <div class="form-group">
-                        <label for="telefone">Telefone / WhatsApp</label>
-                        <input type="text" id="telefone" name="telefone" placeholder="Ex: (11) 99999-9999" required>
+                    <div>
+                        <label class="block text-[9px] font-bold text-[#71717a] uppercase tracking-widest mb-1.5">Contato / Celular</label>
+                        <input type="text" name="telefone" placeholder="(00) 00000-0000" required
+                            class="w-full bg-[#18181b] border border-[#27272a] rounded-lg px-4 py-2 text-xs text-white focus:outline-none focus:border-white transition font-mono">
                     </div>
-                    <button type="submit" class="btn-submit">Cadastrar Cliente</button>
+                    <button type="submit" class="w-full bg-white hover:bg-[#e4e4e7] text-black font-bold py-2 rounded-lg transition text-xs uppercase tracking-widest">
+                        Salvar Registro
+                    </button>
                 </form>
             </div>
 
-            <div class="card">
-                <h2>Clientes Cadastrados</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nome</th>
-                            <th>Telefone</th>
-                            <th>Ações</th> </tr>
-                    </thead>
-                    <tbody>
-                        {% for cliente in dados_clientes %}
-                        <tr>
-                            <td>{{ cliente.id }}</td>
-                            <td>{{ cliente.nome }}</td>
-                            <td>{{ cliente.telefone }}</td>
-                            <td>
-                                <a href="/deletar/{{ cliente.id }}" class="btn-deletar" onclick="return confirm('Tem certeza que deseja excluir este cliente?')">Excluir</a>
-                            </td>
-                        </tr>
-                        {% else %}
-                        <tr>
-                            <td colspan="4" style="text-align: center; color: #888;">Nenhum cliente cadastrado ainda.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <div class="lg:col-span-2 bg-[#0e0e11] border border-[#1f1f23] rounded-xl p-5">
+                <h3 class="text-xs font-bold uppercase tracking-widest text-white mb-4 border-b border-[#1f1f23] pb-2">Registros Ativos</h3>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="border-b border-[#1f1f23] text-[#52525b] text-[10px] uppercase tracking-widest">
+                                <th class="pb-3 px-3 w-12 font-mono">ID</th>
+                                <th class="pb-3 px-3">Nome do Cliente</th>
+                                <th class="pb-3 px-3 font-mono">Telefone</th>
+                                <th class="pb-3 px-3 text-center w-20">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-[#18181b]">
+                            {% if clientes %}
+                                {% for cliente in clientes %}
+                                <tr class="hover:bg-[#18181b]/40 transition">
+                                    <td class="py-3 px-3 text-[#52525b] font-mono text-xs">#{{ cliente.id }}</td>
+                                    <td class="py-3 px-3 font-bold text-white uppercase tracking-wider">{{ cliente.nome }}</td>
+                                    <td class="py-3 px-3 text-[#a1a1aa] font-mono">{{ cliente.telefone }}</td>
+                                    <td class="py-3 px-3 text-center">
+                                        <a href="/clientes/excluir/{{ cliente.id }}" class="text-[#ef4444] hover:text-red-400 text-[10px] font-bold uppercase tracking-widest transition">Excluir</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="4" class="py-8 text-center text-[#52525b] italic text-xs uppercase tracking-widest font-mono">Nenhum cliente mapeado.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
+    </main>
+
 </body>
 </html>
