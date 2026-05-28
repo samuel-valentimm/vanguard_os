@@ -22,14 +22,31 @@ class ClienteService:
     def deletar_cliente(cls, id_cliente):
         supabase.table('clientes').delete().eq('id', id_cliente).execute()
 
+    @staticmethod
+    def adicionar_condicional(dados):
+
+        supabase.table("condicionais").insert(dados).execute()  
+        produto = supabase.table("estoque_variacoes").select("quantidade").eq("sku", dados['sku']).single().execute().data
+        nova_qtd = produto['quantidade'] - 1
+        
+        supabase.table("estoque_variacoes").update({"quantidade": nova_qtd}).eq("sku", dados['sku']).execute()
+
+    @classmethod
+    def listar_condicionais(cls):
+        resposta = supabase.table("condicionais").select("*").execute()
+        return resposta.data
+
+    @classmethod
+    def buscar_id_por_nome(cls, nome_cliente):
+        resposta = supabase.table('clientes').select('id').eq('nome', nome_cliente).single().execute()
+        if resposta.data:
+            return resposta.data['id']
+        return None
+
 
 class ProdutoService:
     @classmethod
     def cadastrar_produto_com_grade(cls, dados):
-        """
-        Cadastro unificado: busca ou cria o produto PAI e insere a variação.
-        """
-
         nome_produto = str(dados.get("nome_produto", "PRODUTO")).upper().strip()
         cor_produto = str(dados.get("cor", "UNICA")).upper().strip()
         tamanho = str(dados.get("tamanho", "U")).upper().strip()
@@ -42,7 +59,6 @@ class ProdutoService:
         if produto_existente.data:
             produto_id = produto_existente.data[0]["id"]
         else:
-
             novo_produto = {"nome": nome_produto, "categoria": "GERAL"}
             resultado = supabase.table("produtos").insert(novo_produto).execute()
             produto_id = resultado.data[0]["id"]
@@ -62,6 +78,5 @@ class ProdutoService:
 
     @classmethod
     def listar_produtos_estoque(cls):
-
         resultado = supabase.table("estoque_variacoes").select("*, produtos(nome, categoria)").execute()
         return resultado.data

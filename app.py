@@ -1,7 +1,13 @@
 from flask import Flask, flash, render_template, request, redirect, url_for
 from database import ClienteService, ProdutoService
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 app = Flask(__name__)
+
+app.secret_key = os.getenv("SECRET_KEY")
 
 # ---- INTERFACE PRINCIPAL (DASHBOARD) ----
 @app.route("/")
@@ -16,7 +22,7 @@ def clientes():
         nome = request.form.get('nome')
         telefone = request.form.get('telefone')
 
-        # Cadastra o cliente enviando o dicionário para o serviço do Supabase
+
         ClienteService.adicionar_cliente({"nome": nome, "telefone": telefone})
         return redirect('/clientes')
     
@@ -68,8 +74,31 @@ def salvar_produto():
         return redirect('/produtos')
     
     except Exception as e:
-        print(f"❌ ERRO DETALHADO: {e}")
+        print(f" ERRO DETALHADO: {e}")
         return f"Erro ao salvar: {e}", 500
+
+
+# ---- MODULO DE CONDICIONAIS ----
+@app.route('/condicionais', methods = ['GET', 'POST'])
+def condicionais():
+    if request.method == 'POST':
+
+        nome_cliente = request.form.get('cliente_nome')
+        sku = request.form.get('sku_produto')
+        preco = request.form.get('preco_venda')
+
+        cliente_id = ClienteService.buscar_id_por_nome(nome_cliente)
+        
+        ClienteService.adicionar_condicional({
+            "cliente_id": cliente_id,
+            "sku": sku,
+            "preco_venda": preco
+        })
+        return redirect('/condicionais')
     
+    dados_condicional = ClienteService.listar_condicionais()
+    return render_template("condicionais.html", condicionais = dados_condicional)
+
+
 if __name__ == "__main__":
     app.run(debug=True)
