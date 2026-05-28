@@ -13,7 +13,8 @@
   {% endif %}
 {% endwith %}
 
-<form action="/condicionais" method="POST" class="mb-8 p-6 bg-[#0e0e11] rounded-xl border border-[#1f1f23] grid grid-cols-1 md:grid-cols-3 gap-4">
+{# CORRIGIDO: action apontando para o Blueprint financeiro #}
+<form action="{{ url_for('financeiro.condicionais') }}" method="POST" class="mb-8 p-6 bg-[#0e0e11] rounded-xl border border-[#1f1f23] grid grid-cols-1 md:grid-cols-3 gap-4">
     <div>
         <label class="block text-xs text-[#71717a] uppercase mb-1">Cliente</label>
         <input list="lista-clientes" name="cliente_nome" placeholder="SELECIONE O CLIENTE..." required
@@ -25,7 +26,7 @@
 
     <div>
         <label class="block text-xs text-[#71717a] uppercase mb-1">SKU do Produto</label>
-        <input list="lista-produtos" name="sku_produto" placeholder="SELECIONE A PEÇA..." required
+        <input list="lista-produtos" name="sku_produto" id="input-sku" placeholder="SELECIONE A PEÇA..." required
             class="w-full bg-[#18181b] border border-[#27272a] p-2 text-white rounded uppercase">
         <p id="label-estoque" class="text-[10px] text-yellow-600 font-bold mt-1 uppercase"></p>
 
@@ -50,38 +51,41 @@
     </button>
 </form>
 
-    <div class="bg-[#0e0e11] p-6 rounded-xl border border-[#1f1f23]">
-        <h3 class="text-lg font-bold text-white mb-4">Itens em Posse</h3>
-        
-        <table class="w-full text-left">
-            <thead>
+<div class="bg-[#0e0e11] p-6 rounded-xl border border-[#1f1f23]">
+    <h3 class="text-lg font-bold text-white mb-4">Itens em Posse</h3>
+    
+    <table class="w-full text-left">
+        <thead>
             <tr class="text-[#71717a] text-xs uppercase">
-        <th class="pb-4">Cliente</th>
-        <th class="pb-4">SKU</th>
-        <th class="pb-4">Preço</th> 
-        <th class="pb-4">QTD</th> <th class="pb-4">Ações</th>
-    </tr>
-    </thead>
-    <tbody>
-        {% for item in condicionais %}
-        <tr class="border-t border-[#1f1f23] text-white">
-            <td class="py-3 font-bold">{{ item.cliente_nome if item.cliente_nome else '---' }}</td>
-            <td class="py-3">{{ item.sku }}</td>
-            <td class="py-3">R$ {{ item.preco_venda }}</td>
-            <td class="py-3">{{ item.get('quantidade', 1) }}</td> <td class="py-3 flex gap-2"> <a href="{{ url_for('vender_condicional', id_item=item.id) }}" 
-                    class="px-3 py-1 bg-green-700 hover:bg-green-600 rounded text-xs font-bold uppercase transition">Vender</a>
-                        
-                <a href="{{ url_for('devolver_condicional', id_item=item.id or 0, sku=item.sku or 'SEM-SKU', quantidade=item.get('quantidade', 1)) }}" 
-                    class="px-3 py-1 bg-yellow-700 hover:bg-yellow-600 rounded text-xs font-bold uppercase transition">
-                    Devolver
-                </a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-
-        </table>
-    </div>
+                <th class="pb-4">Cliente</th>
+                <th class="pb-4">SKU</th>
+                <th class="pb-4">Preço</th> 
+                <th class="pb-4">QTD</th> 
+                <th class="pb-4">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in condicionais %}
+            <tr class="border-t border-[#1f1f23] text-white">
+                <td class="py-3 font-bold">{{ item.cliente_nome if item.cliente_nome else '---' }}</td>
+                <td class="py-3">{{ item.sku }}</td>
+                <td class="py-3">R$ {{ item.preco_venda }}</td>
+                <td class="py-3">{{ item.get('quantidade', 1) }}</td> 
+                <td class="py-3 flex gap-2"> 
+                    {# CORRIGIDO: url_for com prefixo financeiro #}
+                    <a href="{{ url_for('financeiro.vender', id_item=item.id) }}" 
+                       class="px-3 py-1 bg-green-700 hover:bg-green-600 rounded text-xs font-bold uppercase transition">Vender</a>
+                    
+                    <a href="{{ url_for('financeiro.devolver', id_item=item.id or 0, sku=item.sku or 'SEM-SKU', quantidade=item.get('quantidade', 1)) }}" 
+                       class="px-3 py-1 bg-yellow-700 hover:bg-yellow-600 rounded text-xs font-bold uppercase transition">
+                       Devolver
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
 <div id="data-container" data-produtos='{{ produtos | tojson | safe }}' style="display:none;"></div>
 
@@ -94,14 +98,12 @@
 
     inputSku.addEventListener('change', function() {
         const selecionado = produtos.find(p => p.sku === this.value);
-
         if (selecionado) {
             inputPreco.value = selecionado.preco_venda;
             labelEstoque.innerText = `Disponível em estoque: ${selecionado.quantidade}`;
         } else {
             labelEstoque.innerText = "";
         }
-        
     });
 </script>
 {% endblock %}

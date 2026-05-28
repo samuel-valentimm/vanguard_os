@@ -15,7 +15,7 @@ def clientes():
         return redirect(url_for('clientes.clientes'))
     
     dados_clientes = ClienteService.listar_clientes()
-    return render_template("clientes.html", clientes=dados_clientes)
+    return render_template("clientes/clientes.html", clientes=dados_clientes)
 
 
 @clientes_bp.route("/clientes/excluir/<int:id_cliente>")
@@ -32,7 +32,7 @@ def ficha_cliente(cliente_id):
     from services.financeiro_service import FinanceiroService
     resumo = FinanceiroService.obter_resumo_cliente(cliente_id)
 
-    return render_template("ficha_cliente.html", cliente=cliente, resumo=resumo)
+    return render_template("clientes/ficha_cliente.html", cliente=cliente, resumo=resumo)
 
 
 @clientes_bp.route("/cliente/baixa/<int:cliente_id>", methods=["POST"])

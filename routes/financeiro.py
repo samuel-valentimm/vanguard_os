@@ -33,7 +33,7 @@ def condicionais():
 
         return redirect(url_for('financeiro.condicionais'))
     
-    return render_template("condicionais.html", 
+    return render_template("financeiro/condicionais.html", 
                            condicionais=FinanceiroService.listar_condicionais(),
                            clientes=ClienteService.listar_clientes(),
                            produtos=ProdutoService.listar_produtos_estoque())

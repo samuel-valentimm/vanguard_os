@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+
 {% block content %}
 <div class="max-w-2xl mx-auto bg-[#0e0e11] p-6 rounded-xl border border-[#1f1f23]">
     <h2 class="text-xl font-black text-white mb-6">Nova Venda Direta</h2>
@@ -7,20 +8,22 @@
         Atenção: Sistema de Cartão e Pix indisponível. Apenas pagamentos em DINHEIRO.
     </div>
 
-    <form action="/venda_direta" method="POST" class="space-y-4">
+    <form action="{{ url_for('vendas.nova_venda') }}" method="POST" class="space-y-4">
         <div class="grid grid-cols-2 gap-4">
             <input list="produtos" name="sku" placeholder="SKU" required class="bg-[#18181b] p-2 text-white rounded border border-[#27272a]">
-            <input type="number" name="quantidade" placeholder="QTD" required class="bg-[#18181b] p-2 text-white rounded border border-[#27272a]">
+            <input type="number" name="quantidade" id="quantidade" placeholder="QTD" required class="bg-[#18181b] p-2 text-white rounded border border-[#27272a]">
         </div>
+        
+        <input type="number" step="0.01" name="valor_unitario" id="valor_unitario" placeholder="VALOR UNITÁRIO (R$)" required class="w-full bg-[#18181b] p-2 text-white rounded border border-[#27272a]">
         
         <input type="number" step="0.01" name="valor_recebido" id="valor_recebido" placeholder="TOTAL RECEBIDO (R$)" required class="w-full bg-[#18181b] p-2 text-white rounded border border-[#27272a]">
         
         <div class="flex justify-between items-center text-white p-4 bg-[#18181b] rounded">
             <span>Troco:</span>
-            <span id="display-troco" class="text-xl font-black">R$ 0,00</span>
+            <span id="display-troco" class="text-xl font-black text-green-500">R$ 0,00</span>
         </div>
 
-        <button type="submit" class="w-full bg-white text-black font-bold py-3 rounded uppercase text-xs hover:bg-gray-200">
+        <button type="submit" class="w-full bg-white text-black font-bold py-3 rounded uppercase text-xs hover:bg-gray-200 transition">
             Confirmar Venda
         </button>
     </form>
@@ -28,10 +31,29 @@
 
 <script>
     const inputRecebido = document.getElementById('valor_recebido');
+    const inputQtd = document.getElementById('quantidade');
+    const inputUnitario = document.getElementById('valor_unitario');
     const displayTroco = document.getElementById('display-troco');
 
-    inputRecebido.addEventListener('input', () => {
+    function calcularTroco() {
+        const qtd = parseFloat(inputQtd.value) || 0;
+        const unitario = parseFloat(inputUnitario.value) || 0;
+        const recebido = parseFloat(inputRecebido.value) || 0;
+        
+        const totalVenda = qtd * unitario;
+        const troco = recebido - totalVenda;
+        
+        if (troco >= 0) {
+            displayTroco.innerText = `R$ ${troco.toFixed(2)}`;
+            displayTroco.classList.replace('text-red-500', 'text-green-500');
+        } else {
+            displayTroco.innerText = `Faltam R$ ${Math.abs(troco).toFixed(2)}`;
+            displayTroco.classList.replace('text-green-500', 'text-red-500');
+        }
+    }
 
+    [inputRecebido, inputQtd, inputUnitario].forEach(element => {
+        element.addEventListener('input', calcularTroco);
     });
 </script>
 {% endblock %}

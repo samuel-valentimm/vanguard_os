@@ -25,8 +25,14 @@ class ProdutoService:
             "preco_venda": float(dados.get("preco_venda", 0)),
             "quantidade": int(dados.get("quantidade", 0))
         }
+        
         supabase.table("estoque_variacoes").insert(variacao).execute()
         return produto_id
+
+
+    @classmethod
+    def deletar_variacao(cls, id_variacao):
+        return supabase.table("estoque_variacoes").delete().eq("id", id_variacao).execute()
 
 
     @staticmethod

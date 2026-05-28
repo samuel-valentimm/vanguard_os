@@ -16,4 +16,4 @@ def nova_venda():
 
         return redirect(url_for('vendas.nova_venda'))
     
-    return render_template("venda_direta.html")
+    return render_template("vendas/venda_direta.html")

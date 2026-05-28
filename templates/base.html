@@ -33,13 +33,16 @@
                 <a href="/" class="flex items-center space-x-3 {% if request.path == '/' %}bg-white text-black{% else %}text-[#a1a1aa] hover:bg-[#18181b] hover:text-white{% endif %} px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition">
                     <span>📊</span> <span>Dashboard</span>
                 </a>
-                <a href="/clientes" class="flex items-center space-x-3 {% if request.path == '/clientes' %}bg-white text-black{% else %}text-[#a1a1aa] hover:bg-[#18181b] hover:text-white{% endif %} px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition">
+                
+                <a href="{{ url_for('clientes.clientes') }}" class="flex items-center space-x-3 {% if request.endpoint == 'clientes.clientes' %}bg-white text-black{% else %}text-[#a1a1aa] hover:bg-[#18181b] hover:text-white{% endif %} px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition">
                     <span>👥</span> <span>Clientes</span>
                 </a>
-                <a href="/produtos" class="flex items-center space-x-3 {% if request.path == '/produtos' %}bg-white text-black{% else %}text-[#a1a1aa] hover:bg-[#18181b] hover:text-white{% endif %} px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition">
+                
+                <a href="{{ url_for('estoque.visualizar_produtos') }}" class="flex items-center space-x-3 {% if request.endpoint == 'estoque.visualizar_produtos' %}bg-white text-black{% else %}text-[#a1a1aa] hover:bg-[#18181b] hover:text-white{% endif %} px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition">
                     <span>📦</span> <span>Estoque / Grade</span>
                 </a>
-                <a href="/condicionais" class="flex items-center space-x-3 {% if request.path == '/condicionais' %}bg-white text-black{% else %}text-[#a1a1aa] hover:bg-[#18181b] hover:text-white{% endif %} px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition">
+                
+                <a href="{{ url_for('financeiro.condicionais') }}" class="flex items-center space-x-3 {% if request.endpoint == 'financeiro.condicionais' %}bg-white text-black{% else %}text-[#a1a1aa] hover:bg-[#18181b] hover:text-white{% endif %} px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition">
                     <span>🛍️</span> <span>Condicionais</span>
                 </a>
             </nav>

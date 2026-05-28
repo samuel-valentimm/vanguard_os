@@ -25,20 +25,15 @@
         <div class="bg-[#0e0e11] border border-[#1f1f23] rounded-xl p-5 h-fit shadow-xl">
             <h3 class="text-xs font-bold uppercase tracking-widest text-white mb-4 border-b border-[#1f1f23] pb-2">Novo Produto / Grade</h3>
             
-            <form action="/produtos/salvar" method="POST" class="space-y-4" id="form-produto">
+            {# CORRIGIDO: action apontando para o Blueprint estoque #}
+            <form action="{{ url_for('estoque.salvar_produto') }}" method="POST" class="space-y-4" id="form-produto">
                 <div>
                     <label class="block text-[10px] font-bold text-[#71717a] uppercase tracking-widest mb-1.5">Nome do Produto / Modelo</label>
                     <input type="text" name="nome_produto" placeholder="EX: CAMISETA OVERSIZED VANGUARD" required
                         class="w-full bg-[#18181b] border border-[#27272a] rounded-lg px-4 py-2 text-xs uppercase tracking-wider text-white focus:outline-none focus:border-white transition">
                 </div>
 
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-[10px] font-bold text-[#71717a] uppercase tracking-widest mb-1.5">Ref_ID (Manual)</label>
-                        <input type="number" name="produto_id" placeholder="Ex: 6" required
-                            class="w-full bg-[#18181b] border border-[#27272a] rounded-lg px-4 py-2 text-xs text-white focus:outline-none focus:border-white transition font-mono">
-                    </div>
-                    
+                <div class="grid grid-cols-2 gap-3">           
                     <div>
                         <label class="block text-[10px] font-bold text-[#71717a] uppercase tracking-widest mb-1.5">Tamanho</label>
                         <select name="tamanho" required class="w-full bg-[#18181b] border border-[#27272a] rounded-lg px-4 py-2 text-xs text-white focus:outline-none focus:border-white transition font-mono uppercase cursor-pointer appearance-none">
@@ -87,30 +82,35 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-base">
                     <thead>
-                        <tr class="border-b border-[#1f1f23] text-[#52525b] text-[10px] uppercase tracking-widest font-mono">
-                            <th class="pb-3 px-3">SKU</th>
-                            <th class="pb-3 px-3 text-center">Ref_ID</th>
-                            <th class="pb-3 px-3">Cor</th>
-                            <th class="pb-3 px-3 text-center">Tam.</th>
-                            <th class="pb-3 px-3 text-right">P. Custo</th>
-                            <th class="pb-3 px-3 text-right">P. Venda</th>
-                            <th class="pb-3 px-3 text-center">Qtd.</th>
-                        </tr>
+                        <tr class="text-[#52525b] text-[10px] uppercase tracking-widest">
+                            <th>SKU</th>
+                            <th>ID Produto</th>
+                            <th>Cor</th>
+                            <th>Tam</th>
+                            <th>Custo</th>
+                            <th>Venda</th>
+                            <th class="text-center">Qtd</th>
+                            <th class="text-center">Ação</th> </tr>
                     </thead>
                     <tbody class="divide-y divide-[#18181b] font-mono text-[#e4e4e7]">
                         {% if variacoes %}
                             {% for item in variacoes %}
                             <tr class="hover:bg-[#18181b]/40 transition">
-                                <td class="py-3 px-3 font-bold text-white uppercase">{{ item.sku }}</td>
-                                <td class="py-3 px-3 text-center text-[#71717a]">#{{ item.produto_id }}</td>
-                                <td class="py-3 px-3 uppercase text-[#a1a1aa]">{{ item.cor }}</td>
-                                <td class="py-3 px-3 text-center font-bold text-white">{{ item.tamanho }}</td>
-                                <td class="py-3 px-3 text-right text-[#71717a]">R$ {{ "%.2f"|format(item.preco_custo) }}</td>
-                                <td class="py-3 px-3 text-right font-bold text-white">R$ {{ "%.2f"|format(item.preco_venda) }}</td>
+                                <td class="py-3 px-3 font-bold text-white uppercase">{{ item['sku'] }}</td>
+                                <td class="py-3 px-3 text-center text-[#71717a]">#{{ item['produto_id'] }}</td>
+                                <td class="py-3 px-3 uppercase text-[#a1a1aa]">{{ item['cor'] }}</td>
+                                <td class="py-3 px-3 text-center font-bold text-white">{{ item['tamanho'] }}</td>
+                                <td class="py-3 px-3 text-right text-[#71717a]">R$ {{ "%.2f"|format(item['preco_custo'] or 0) }}</td>
+                                <td class="py-3 px-3 text-right font-bold text-white">R$ {{ "%.2f"|format(item['preco_venda'] or 0) }}</td>
                                 <td class="py-3 px-3 text-center">
-                                    <span class="px-2 py-0.5 rounded {% if item.quantidade > 0 %}bg-[#18181b] text-white border border-[#27272a]{% else %}bg-red-950/30 text-red-400{% endif %}">
-                                        {{ item.quantidade }}
+                                    <span class="px-2 py-0.5 rounded {% if (item['quantidade'] or 0) > 0 %}bg-[#18181b] text-white border border-[#27272a]{% else %}bg-red-950/30 text-red-400{% endif %}">
+                                        {{ item['quantidade'] or 0 }}
                                     </span>
+                                </td>
+                                <td class="py-3 px-3 text-center">
+                                    <form action="{{ url_for('estoque.deletar_produto', id_variacao=item['id']) }}" method="POST" onsubmit="return confirm('ATENÇÃO: Deseja remover?')">
+                                        <button type="submit" class="text-[9px] uppercase font-bold text-red-500 hover:text-red-300">Remover</button>
+                                    </form>
                                 </td>
                             </tr>
                             {% endfor %}
