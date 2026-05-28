@@ -3,27 +3,43 @@
 {% block content %}
 <h2 class="text-xl font-black text-white uppercase tracking-widest mb-6">Condicionais por Cliente</h2>
 
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="p-4 mb-4 text-white {% if category == 'error' %}bg-red-800{% else %}bg-green-800{% endif %} rounded">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
 <form action="/condicionais" method="POST" class="mb-8 p-6 bg-[#0e0e11] rounded-xl border border-[#1f1f23] grid grid-cols-1 md:grid-cols-3 gap-4">
     <div>
         <label class="block text-xs text-[#71717a] uppercase mb-1">Cliente</label>
-        <input list="lista-clientes" name="cliente_nome" placeholder="Digite o nome do cliente..." required
-            class="w-full bg-[#18181b] border border-[#27272a] p-2 text-white rounded">
+        <input list="lista-clientes" name="cliente_nome" placeholder="SELECIONE O CLIENTE..." required
+            class="w-full bg-[#18181b] border border-[#27272a] p-2 text-white rounded uppercase">
         <datalist id="lista-clientes">
-            {% for cliente in clientes %}
-            <option value="{{ cliente.nome }}">
-            {% endfor %}
+            {% for cliente in clientes %}<option value="{{ cliente.nome }}">{% endfor %}
         </datalist>
     </div>
 
     <div>
         <label class="block text-xs text-[#71717a] uppercase mb-1">SKU do Produto</label>
-        <input type="text" name="sku" required placeholder="Ex: CAMISA-PRETA-G"
-            class="w-full bg-[#18181b] border border-[#27272a] p-2 text-white rounded">
+        <input list="lista-produtos" name="sku_produto" placeholder="SELECIONE A PEÇA..." required
+            class="w-full bg-[#18181b] border border-[#27272a] p-2 text-white rounded uppercase">
+        <datalist id="lista-produtos">
+            {% for produto in produtos %}<option value="{{ produto.sku }}">{% endfor %}
+        </datalist>
     </div>
 
     <div>
         <label class="block text-xs text-[#71717a] uppercase mb-1">Preço</label>
         <input type="number" step="0.01" name="preco_venda" required placeholder="0.00"
+            class="w-full bg-[#18181b] border border-[#27272a] p-2 text-white rounded">
+    </div>
+    <div>
+        <label class="block text-xs text-[#71717a] uppercase mb-1">Qtd</label>
+        <input type="number" name="quantidade" value="1" min="1" required
             class="w-full bg-[#18181b] border border-[#27272a] p-2 text-white rounded">
     </div>
 
@@ -32,26 +48,52 @@
     </button>
 </form>
 
-<div class="bg-[#0e0e11] p-6 rounded-xl border border-[#1f1f23]">
-    <h3 class="text-lg font-bold text-white mb-4">Itens em Posse</h3>
-    
-    <table class="w-full text-left">
-        <thead>
+    <div class="bg-[#0e0e11] p-6 rounded-xl border border-[#1f1f23]">
+        <h3 class="text-lg font-bold text-white mb-4">Itens em Posse</h3>
+        
+        <table class="w-full text-left">
+            <thead>
             <tr class="text-[#71717a] text-xs uppercase">
-                <th class="pb-4">SKU</th>
-                <th class="pb-4">Preço</th>
-                <th class="pb-4">Data</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in condicionais %}
-            <tr class="border-t border-[#1f1f23] text-white">
-                <td class="py-3">{{ item.sku }}</td>
-                <td class="py-3">R$ {{ item.preco_venda }}</td>
-                <td class="py-3 text-[#71717a] text-sm">{{ item.created_at[:10] if item.created_at else '---' }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+        <th class="pb-4">Cliente</th>
+        <th class="pb-4">SKU</th>
+        <th class="pb-4">Preço</th> 
+        <th class="pb-4">QTD</th> <th class="pb-4">Ações</th>
+    </tr>
+    </thead>
+    <tbody>
+        {% for item in condicionais %}
+        <tr class="border-t border-[#1f1f23] text-white">
+            <td class="py-3 font-bold">{{ item.cliente_nome if item.cliente_nome else '---' }}</td>
+            <td class="py-3">{{ item.sku }}</td>
+            <td class="py-3">R$ {{ item.preco_venda }}</td>
+            <td class="py-3">{{ item.get('quantidade', 1) }}</td> <td class="py-3 flex gap-2"> <a href="{{ url_for('vender_condicional', id_item=item.id) }}" 
+                    class="px-3 py-1 bg-green-700 hover:bg-green-600 rounded text-xs font-bold uppercase transition">Vender</a>
+                        
+                <a href="{{ url_for('devolver_condicional', id_item=item.id or 0, sku=item.sku or 'SEM-SKU', quantidade=item.get('quantidade', 1)) }}" 
+                    class="px-3 py-1 bg-yellow-700 hover:bg-yellow-600 rounded text-xs font-bold uppercase transition">
+                    Devolver
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+
+        </table>
+    </div>
+
+<div id="data-container" data-produtos='{{ produtos | tojson | safe }}' style="display:none;"></div>
+
+<script>
+    const container = document.getElementById('data-container');
+    const produtos = JSON.parse(container.getAttribute('data-produtos'));
+    const inputSku = document.querySelector('input[name="sku_produto"]');
+    const inputPreco = document.querySelector('input[name="preco_venda"]');
+
+    inputSku.addEventListener('change', function() {
+        const selecionado = produtos.find(p => p.sku === this.value);
+        if (selecionado) {
+            inputPreco.value = selecionado.preco_venda;
+        }
+    });
+</script>
 {% endblock %}

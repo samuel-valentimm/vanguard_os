@@ -27,6 +27,17 @@
         </div>
 
         <div class="lg:col-span-2 bg-[#0e0e11] border border-[#1f1f23] rounded-xl p-5">
+            
+            <div class="mb-6">
+                <label class="block text-[9px] font-bold text-[#71717a] uppercase tracking-widest mb-1.5">Buscar Cliente na Lista</label>
+                <input list="lista-clientes-busca" placeholder="COMECE A DIGITAR O NOME..." 
+                       class="w-full bg-[#18181b] border border-[#27272a] rounded-lg px-4 py-2 text-xs uppercase tracking-wider text-white focus:outline-none focus:border-white transition">
+                <datalist id="lista-clientes-busca">
+                    {% for cliente in clientes %}
+                    <option value="{{ cliente.nome }}">
+                    {% endfor %}
+                </datalist>
+            </div>
             <h3 class="text-xs font-bold uppercase tracking-widest text-white mb-4 border-b border-[#1f1f23] pb-2">Registros Ativos</h3>
             
             <div class="overflow-x-auto">

@@ -6,8 +6,8 @@ import os
 load_dotenv()
 
 app = Flask(__name__)
-
 app.secret_key = os.getenv("SECRET_KEY")
+
 
 # ---- INTERFACE PRINCIPAL (DASHBOARD) ----
 @app.route("/")
@@ -19,10 +19,8 @@ def index():
 @app.route("/clientes", methods=['GET', 'POST'])
 def clientes():
     if request.method == 'POST':
-        nome = request.form.get('nome')
+        nome = request.form.get('nome').upper().strip()
         telefone = request.form.get('telefone')
-
-
         ClienteService.adicionar_cliente({"nome": nome, "telefone": telefone})
         return redirect('/clientes')
     
@@ -32,7 +30,6 @@ def clientes():
 
 @app.route("/clientes/excluir/<int:id_cliente>")
 def deletar(id_cliente):
-    """Rota ajustada para bater com o link 'Excluir' do novo clientes.html"""
     ClienteService.deletar_cliente(id_cliente)
     return redirect(url_for("clientes"))
 
@@ -40,14 +37,12 @@ def deletar(id_cliente):
 # ---- MÓDULO DE ESTOQUE / PRODUTOS ----
 @app.route('/produtos')
 def visualizar_produtos():
-    """Rota para exibir a página de cadastro e a grade de variações do estoque"""
     try: 
         produtos_estoque = ProdutoService.listar_produtos_estoque()
         return render_template('produtos.html', variacoes=produtos_estoque)
-    
     except Exception as e:
         return f"Erro ao carregar a pagina de produtos: {e}", 500
-    
+
 
 @app.route('/produtos/salvar', methods=['POST'])
 def salvar_produto():
@@ -66,39 +61,64 @@ def salvar_produto():
 
         dados_salvar = request.form.to_dict()
         dados_salvar['sku'] = sku_gerado
-        
         dados_salvar.pop('nome_produto', None)
 
         ProdutoService.cadastrar_produto_com_grade(dados_salvar)
         flash('Produto cadastrado com sucesso!', 'success')
         return redirect('/produtos')
-    
     except Exception as e:
-        print(f" ERRO DETALHADO: {e}")
         return f"Erro ao salvar: {e}", 500
 
 
 # ---- MODULO DE CONDICIONAIS ----
-@app.route('/condicionais', methods = ['GET', 'POST'])
+@app.route('/condicionais', methods=['GET', 'POST'])
 def condicionais():
     if request.method == 'POST':
-
-        nome_cliente = request.form.get('cliente_nome')
-        sku = request.form.get('sku_produto')
+        nome_cliente = request.form.get('cliente_nome', '').upper().strip()
+        sku = request.form.get('sku_produto', '').upper().strip()
         preco = request.form.get('preco_venda')
+        quantidade = int(request.form.get('quantidade', 1))
 
         cliente_id = ClienteService.buscar_id_por_nome(nome_cliente)
-        
-        ClienteService.adicionar_condicional({
-            "cliente_id": cliente_id,
-            "sku": sku,
-            "preco_venda": preco
-        })
+
+        if cliente_id:
+            try:
+                ClienteService.adicionar_condicional({
+                    "cliente_id": cliente_id,
+                    "sku": sku,
+                    "preco_venda": preco,
+                    "quantidade": quantidade
+                })
+                flash('Item adicionado à condicional com sucesso!', 'success')
+            except Exception as e:
+                flash(str(e), 'error')
+        else:
+            flash('Erro: Cliente não encontrado.', 'error')
+            
         return redirect('/condicionais')
     
-    dados_condicional = ClienteService.listar_condicionais()
-    return render_template("condicionais.html", condicionais = dados_condicional)
+    return render_template("condicionais.html", 
+                           condicionais=ClienteService.listar_condicionais(), 
+                           clientes=ClienteService.listar_clientes(), 
+                           produtos=ProdutoService.listar_produtos_estoque())
 
+
+@app.route("/condicionais/devolver/<int:id_item>/<sku>/<int:quantidade>")
+@app.route("/condicionais/devolver/<int:id_item>/<sku>") # Rota de fallback
+
+def devolver_condicional(id_item, sku, quantidade=1):
+    ClienteService.processar_devolucao(id_item, sku, quantidade)
+    flash('Item devolvido ao estoque com sucesso!', 'success')
+    return redirect(url_for("condicionais"))
+
+
+@app.route("/condicionais/vender/<int:id_item>")
+def vender_condicional(id_item):
+    """Apenas remove da condicional"""
+
+    ClienteService.processar_venda(id_item)
+    flash('Venda da condicional registrada com sucesso!', 'success')
+    return redirect(url_for("condicionais"))
 
 if __name__ == "__main__":
     app.run(debug=True)
