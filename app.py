@@ -34,6 +34,25 @@ def deletar(id_cliente):
     return redirect(url_for("clientes"))
 
 
+@app.route("/cliente/<int:cliente_id>")
+def ficha_cliente(cliente_id):
+    cliente = ClienteService.buscar_cliente_por_id(cliente_id)
+    resumo = ClienteService.obter_resumo_cliente(cliente_id)
+    return render_template("ficha_cliente.html", cliente=cliente, resumo=resumo)
+
+
+@app.route("/cliente/baixa/<int:cliente_id>", methods=["POST"])
+def dar_baixa(cliente_id):
+    try:
+        ClienteService.processar_pagamento(cliente_id)
+        flash("Pagamento registrado com sucesso!", "success")
+
+    except Exception as e:
+        flash(f"Erro: {str(e)}", "error")
+        
+    return redirect(url_for('ficha_cliente', cliente_id=cliente_id))
+
+
 # ---- MÓDULO DE ESTOQUE / PRODUTOS ----
 @app.route('/produtos')
 def visualizar_produtos():

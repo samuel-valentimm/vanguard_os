@@ -27,6 +27,8 @@
         <label class="block text-xs text-[#71717a] uppercase mb-1">SKU do Produto</label>
         <input list="lista-produtos" name="sku_produto" placeholder="SELECIONE A PEÇA..." required
             class="w-full bg-[#18181b] border border-[#27272a] p-2 text-white rounded uppercase">
+        <p id="label-estoque" class="text-[10px] text-yellow-600 font-bold mt-1 uppercase"></p>
+
         <datalist id="lista-produtos">
             {% for produto in produtos %}<option value="{{ produto.sku }}">{% endfor %}
         </datalist>
@@ -86,14 +88,20 @@
 <script>
     const container = document.getElementById('data-container');
     const produtos = JSON.parse(container.getAttribute('data-produtos'));
-    const inputSku = document.querySelector('input[name="sku_produto"]');
+    const inputSku = document.getElementById('input-sku');
     const inputPreco = document.querySelector('input[name="preco_venda"]');
+    const labelEstoque = document.getElementById('label-estoque');
 
     inputSku.addEventListener('change', function() {
         const selecionado = produtos.find(p => p.sku === this.value);
+
         if (selecionado) {
             inputPreco.value = selecionado.preco_venda;
+            labelEstoque.innerText = `Disponível em estoque: ${selecionado.quantidade}`;
+        } else {
+            labelEstoque.innerText = "";
         }
+        
     });
 </script>
 {% endblock %}

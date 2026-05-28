@@ -27,49 +27,47 @@
         </div>
 
         <div class="lg:col-span-2 bg-[#0e0e11] border border-[#1f1f23] rounded-xl p-5">
-            
-            <div class="mb-6">
-                <label class="block text-[9px] font-bold text-[#71717a] uppercase tracking-widest mb-1.5">Buscar Cliente na Lista</label>
-                <input list="lista-clientes-busca" placeholder="COMECE A DIGITAR O NOME..." 
-                       class="w-full bg-[#18181b] border border-[#27272a] rounded-lg px-4 py-2 text-xs uppercase tracking-wider text-white focus:outline-none focus:border-white transition">
-                <datalist id="lista-clientes-busca">
-                    {% for cliente in clientes %}
-                    <option value="{{ cliente.nome }}">
-                    {% endfor %}
-                </datalist>
-            </div>
             <h3 class="text-xs font-bold uppercase tracking-widest text-white mb-4 border-b border-[#1f1f23] pb-2">Registros Ativos</h3>
             
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse text-base">
+                <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="border-b border-[#1f1f23] text-[#52525b] text-[10px] uppercase tracking-widest">
-                            <th class="pb-3 px-3 w-12 font-mono">ID</th>
+                        <tr class="text-[#52525b] text-[10px] uppercase tracking-widest">
                             <th class="pb-3 px-3">Nome do Cliente</th>
-                            <th class="pb-3 px-3 font-mono">Telefone</th>
-                            <th class="pb-3 px-3 text-center w-20">Ações</th>
+                            <th class="pb-3 px-3">Telefone</th>
+                            <th class="pb-3 px-3 text-center">Ações</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-[#18181b]">
-                        {% if clientes %}
-                            {% for cliente in clientes %}
-                            <tr class="hover:bg-[#18181b]/40 transition">
-                                <td class="py-3 px-3 text-[#52525b] font-mono text-xs">#{{ cliente.id }}</td>
-                                <td class="py-3 px-3 font-bold text-white uppercase tracking-wider">{{ cliente.nome }}</td>
-                                <td class="py-3 px-3 text-[#a1a1aa] font-mono">{{ cliente.telefone }}</td>
-                                <td class="py-3 px-3 text-center">
-                                    <a href="/clientes/excluir/{{ cliente.id }}" class="text-[#ef4444] hover:text-red-400 text-[10px] font-bold uppercase tracking-widest transition">Excluir</a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr>
-                                <td colspan="4" class="py-8 text-center text-[#52525b] italic text-xs uppercase tracking-widest font-mono">Nenhum cliente mapeado.</td>
-                            </tr>
-                        {% endif %}
+                        {% for cliente in clientes %}
+                        <tr class="hover:bg-[#18181b]/40 transition">
+                            <td class="py-3 px-3 text-[#52525b] font-mono text-xs">#{{ cliente.id }}</td>
+                            <td class="py-3 px-3 font-bold text-white uppercase text-xs">{{ cliente.nome }}</td>
+                            <td class="py-3 px-3 text-[#a1a1aa] font-mono text-xs">{{ cliente.telefone }}</td>
+                            <td class="py-3 px-3">
+                                <div class="flex justify-center gap-2">
+                                    <a href="{{ url_for('ficha_cliente', cliente_id=cliente.id) }}" 
+                                    class="px-2 py-1 bg-blue-700 border border-blue-500 rounded text-[9px] font-bold uppercase">Ver Ficha</a>
+                                    
+                                    <a href="/clientes/excluir/{{ cliente.id }}" 
+                                    onclick="return confirm('ATENÇÃO: Isso excluirá o CADASTRO do cliente permanentemente. Deseja continuar?')"
+                                    class="px-2 py-1 bg-red-800 border border-red-600 rounded text-[9px] font-bold uppercase">Excluir Cadastro</a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+        <script>
+
+            document.querySelector('input[name="telefone"]').addEventListener('input', function (e) {
+                let x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
+                e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+            });
+
+        </script>
+        
 {% endblock %}

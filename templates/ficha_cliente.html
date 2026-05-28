@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <div class="flex items-center justify-between mb-8">
+        <a href="{{ url_for('clientes') }}" class="flex items-center text-xs font-bold uppercase tracking-widest text-[#71717a] hover:text-white transition">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Voltar para Base de Clientes
+        </a>
+        <span class="text-[10px] text-[#3f3f46] font-mono uppercase">Vanguard OS // Ficha do Cliente</span>
+    </div>
+
+    <div class="bg-[#0e0e11] border border-[#1f1f23] rounded-xl p-8 mb-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+                <h1 class="text-3xl font-black text-white uppercase tracking-tighter">{{ cliente.nome }}</h1>
+                <p class="text-sm text-[#71717a] font-mono mt-1">{{ cliente.telefone }}</p>
+            </div>
+            
+            <div class="flex gap-8 border-l border-[#1f1f23] pl-8">
+                <div>
+                    <p class="text-[9px] font-bold text-[#71717a] uppercase tracking-widest mb-1">Peças em Posse</p>
+                    <p class="text-2xl font-black text-white">{{ resumo.total_pecas }}</p>
+                </div>
+                <div>
+                    <p class="text-[9px] font-bold text-[#71717a] uppercase tracking-widest mb-1">Saldo Devedor</p>
+                    <p class="text-2xl font-black {{ 'text-red-500' if resumo.total_devido > 0 else 'text-green-500' }}">
+                        R$ {{ "{:,.2f}".format(resumo.total_devido).replace(',', 'X').replace('.', ',').replace('X', '.') }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 pt-6 border-t border-[#1f1f23] flex justify-end">
+            <form action="{{ url_for('dar_baixa', cliente_id=cliente.id) }}" method="POST" onsubmit="return confirm('Confirmar recebimento total e dar baixa nesta ficha?')">
+                <button type="submit" class="bg-green-600 hover:bg-green-500 text-white text-[10px] font-bold uppercase tracking-widest px-6 py-3 rounded-lg transition shadow-lg shadow-green-900/20">
+                    Efetuar Baixa de Pagamento
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="bg-[#0e0e11] border border-[#1f1f23] rounded-xl p-6">
+        <h3 class="text-xs font-bold uppercase tracking-widest text-white mb-6">Itens Atuais em Condicional</h3>
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="text-[#52525b] text-[10px] uppercase tracking-widest border-b border-[#1f1f23]">
+                    <th class="pb-4 px-2">Data/Ref</th>
+                    <th class="pb-4 px-2">SKU Produto</th>
+                    <th class="pb-4 px-2">Quantidade</th>
+                    <th class="pb-4 px-2 text-right">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-[#18181b]">
+                {% for item in resumo.itens %}
+                <tr class="text-white text-xs hover:bg-[#18181b]/30">
+                    <td class="py-4 px-2 text-[#52525b] font-mono italic">#{{ item.id }}</td>
+                    <td class="py-4 px-2 font-bold uppercase">{{ item.sku }}</td>
+                    <td class="py-4 px-2">{{ item.quantidade }} un</td>
+                    <td class="py-4 px-2 text-right font-mono">R$ {{ "{:,.2f}".format(item.valor_total).replace(',', 'X').replace('.', ',').replace('X', '.') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

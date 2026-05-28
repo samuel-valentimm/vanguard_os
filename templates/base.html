@@ -7,7 +7,18 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-[#09090b] text-[#f4f4f5] min-h-screen flex antialiased font-sans text-base">
-
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="fixed top-5 right-5 z-50">
+          {% for category, message in messages %}
+            <div class="p-4 mb-2 rounded-lg text-white font-bold text-xs uppercase shadow-xl border-l-4 
+              {{ 'bg-green-700 border-green-500' if category == 'success' else 'bg-red-700 border-red-500' }}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
     <aside class="w-64 bg-[#0e0e11] border-r border-[#1f1f23] flex flex-col justify-between h-screen sticky top-0">
         <div>
             <div class="p-6 flex flex-col justify-center border-b border-[#1f1f23]">

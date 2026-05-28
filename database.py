@@ -22,6 +22,14 @@ class ClienteService:
         supabase.table('clientes').insert(dados).execute()
 
 
+    @staticmethod
+    def formatar_dados(cliente):
+        tel = str(cliente.get('telefone', ''))
+        if len(tel) == 11:
+            cliente['telefone'] = f"({tel[0:2]}) {tel[2:7]}-{tel[7:11]}"
+        return cliente
+
+
     @classmethod
     def deletar_cliente(cls, id_cliente):
         supabase.table('clientes').delete().eq('id', id_cliente).execute()
@@ -36,11 +44,12 @@ class ClienteService:
 
     @classmethod
     def adicionar_condicional(cls, dados):
+
         dados['sku'] = dados['sku'].upper().strip()
         quantidade_solicitada = int(dados['quantidade'])
 
         produto = supabase.table("estoque_variacoes") \
-            .select("quantidade") \
+            .select("quantidade, preco_venda") \
             .eq("sku", dados['sku']) \
             .single() \
             .execute().data
@@ -51,9 +60,16 @@ class ClienteService:
         if produto['quantidade'] < quantidade_solicitada:
             raise Exception(f"Estoque insuficiente! Disponível: {produto['quantidade']}")
 
+        preco_unitario = float(dados.get('preco_venda', produto.get('preco_venda', 0)))
+        dados['valor_total'] = preco_unitario * quantidade_solicitada
+
         supabase.table("condicionais").insert(dados).execute()
+
         nova_qtd = produto['quantidade'] - quantidade_solicitada
-        supabase.table("estoque_variacoes").update({"quantidade": nova_qtd}).eq("sku", dados['sku']).execute()
+        supabase.table("estoque_variacoes") \
+            .update({"quantidade": nova_qtd}) \
+            .eq("sku", dados['sku']) \
+            .execute()
 
 
     @classmethod
@@ -78,6 +94,62 @@ class ClienteService:
     @classmethod
     def processar_venda(cls, id_item):
         supabase.table("condicionais").delete().eq("id", id_item).execute()
+
+
+    @staticmethod
+    def buscar_debito_cliente(cliente_id):
+        """Essa funcao sera chamada pela rota que soma todos os valores do cliente"""
+
+        response = supabase.table("condicionais")\
+            .select("valor_total.sum()")\
+            .eq("cliente_id", cliente_id)\
+            .execute()
+        
+        return response.data[0]['sum'] or 0
+
+
+    @staticmethod
+    def obter_resumo_cliente(cliente_id):
+        condicionais = supabase.table("condicionais")\
+            .select("*")\
+            .eq("cliente_id", cliente_id)\
+            .execute().data
+      
+        total_devido = sum(float(item.get('valor_total', 0)) for item in condicionais)
+        total_pecas = sum(int(item.get('quantidade', 0)) for item in condicionais)     
+        return {
+            "itens": condicionais,
+            "total_devido": total_devido,
+            "total_pecas": total_pecas
+        }
+
+    @staticmethod
+    def dar_baixa_pagamento(cliente_id, valor_pago):
+        pass
+
+    # No ClienteService
+    @staticmethod
+    def processar_pagamento_total(cliente_id):
+        """
+        Remove os itens da condicional (baixa) e 
+        poderia salvar em uma tabela de 'historico_vendas'
+        """
+
+        itens = supabase.table("condicionais").select("*").eq("cliente_id", cliente_id).execute().data
+        if itens:
+            supabase.table("condicionais").delete().eq("cliente_id", cliente_id).execute()
+        return True
+        
+    @staticmethod
+    def processar_pagamento(cliente_id):
+        supabase.table("condicionais").delete().eq("cliente_id", cliente_id).execute()
+        return True
+    
+    
+    @staticmethod
+    def buscar_cliente_por_id(cliente_id):
+        response = supabase.table("clientes").select("*").eq("id", cliente_id).single().execute()
+        return response.data
 
 
 class ProdutoService:
