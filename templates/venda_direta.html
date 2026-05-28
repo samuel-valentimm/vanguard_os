@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-2xl mx-auto bg-[#0e0e11] p-6 rounded-xl border border-[#1f1f23]">
+    <h2 class="text-xl font-black text-white mb-6">Nova Venda Direta</h2>
+    
+    <div class="bg-yellow-900/20 border border-yellow-700 p-3 rounded mb-6 text-yellow-500 text-[10px] uppercase font-bold">
+        Atenção: Sistema de Cartão e Pix indisponível. Apenas pagamentos em DINHEIRO.
+    </div>
+
+    <form action="/venda_direta" method="POST" class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+            <input list="produtos" name="sku" placeholder="SKU" required class="bg-[#18181b] p-2 text-white rounded border border-[#27272a]">
+            <input type="number" name="quantidade" placeholder="QTD" required class="bg-[#18181b] p-2 text-white rounded border border-[#27272a]">
+        </div>
+        
+        <input type="number" step="0.01" name="valor_recebido" id="valor_recebido" placeholder="TOTAL RECEBIDO (R$)" required class="w-full bg-[#18181b] p-2 text-white rounded border border-[#27272a]">
+        
+        <div class="flex justify-between items-center text-white p-4 bg-[#18181b] rounded">
+            <span>Troco:</span>
+            <span id="display-troco" class="text-xl font-black">R$ 0,00</span>
+        </div>
+
+        <button type="submit" class="w-full bg-white text-black font-bold py-3 rounded uppercase text-xs hover:bg-gray-200">
+            Confirmar Venda
+        </button>
+    </form>
+</div>
+
+<script>
+    const inputRecebido = document.getElementById('valor_recebido');
+    const displayTroco = document.getElementById('display-troco');
+
+    inputRecebido.addEventListener('input', () => {
+
+    });
+</script>
+{% endblock %}
