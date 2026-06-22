@@ -24,15 +24,14 @@
                 </div>
                 <div>
                     <p class="text-[9px] font-bold text-[#71717a] uppercase tracking-widest mb-1">Saldo Devedor</p>
-                    <p class="text-2xl font-black {{ 'text-red-500' if resumo.total_devido > 0 else 'text-green-500' }}">
-                        R$ {{ "{:,.2f}".format(resumo.total_devido).replace(',', 'X').replace('.', ',').replace('X', '.') }}
+                    <p class="text-2xl font-black {{ 'text-red-500' if (resumo.total_devido or 0) > 0 else 'text-green-500' }}">
+                        {{ resumo.total_devido | formatar_moeda }}
                     </p>
                 </div>
             </div>
         </div>
 
         <div class="mt-8 pt-6 border-t border-[#1f1f23] flex justify-end">
-            {# CORRIGIDO: action apontando para o Blueprint clientes #}
             <form action="{{ url_for('clientes.dar_baixa', cliente_id=cliente.id) }}" method="POST" onsubmit="return confirm('Confirmar recebimento total e dar baixa nesta ficha?')">
                 <button type="submit" class="bg-green-600 hover:bg-green-500 text-white text-[10px] font-bold uppercase tracking-widest px-6 py-3 rounded-lg transition shadow-lg shadow-green-900/20">
                     Efetuar Baixa de Pagamento
@@ -59,7 +58,7 @@
                     <td class="py-4 px-2 font-bold uppercase">{{ item.sku }}</td>
                     <td class="py-4 px-2">{{ item.quantidade }}</td>
                     <td class="py-4 px-2 text-right font-mono">
-                        R$ {{ "{:,.2f}".format(item.subtotal).replace(',', 'X').replace('.', ',').replace('X', '.') }}
+                        {{ item.subtotal | formatar_moeda }}
                     </td>
                 </tr>
                 {% endfor %}

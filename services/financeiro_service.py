@@ -11,7 +11,7 @@ class FinanceiroService:
 
 
     @staticmethod
-    def processar_pagamento(cliente_id):
+    def processar_venda(cliente_id):
         supabase.table("condicionais").delete().eq("cliente_id", cliente_id).execute()
         return True
 

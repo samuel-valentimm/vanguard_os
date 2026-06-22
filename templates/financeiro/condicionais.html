@@ -13,7 +13,6 @@
   {% endif %}
 {% endwith %}
 
-{# CORRIGIDO: action apontando para o Blueprint financeiro #}
 <form action="{{ url_for('financeiro.condicionais') }}" method="POST" class="mb-8 p-6 bg-[#0e0e11] rounded-xl border border-[#1f1f23] grid grid-cols-1 md:grid-cols-3 gap-4">
     <div>
         <label class="block text-xs text-[#71717a] uppercase mb-1">Cliente</label>
@@ -69,10 +68,9 @@
             <tr class="border-t border-[#1f1f23] text-white">
                 <td class="py-3 font-bold">{{ item.cliente_nome if item.cliente_nome else '---' }}</td>
                 <td class="py-3">{{ item.sku }}</td>
-                <td class="py-3">R$ {{ item.preco_venda }}</td>
+                <td class="py-3">{{ item.preco_venda | formatar_moeda }}</td>
                 <td class="py-3">{{ item.get('quantidade', 1) }}</td> 
                 <td class="py-3 flex gap-2"> 
-                    {# CORRIGIDO: url_for com prefixo financeiro #}
                     <a href="{{ url_for('financeiro.vender', id_item=item.id) }}" 
                        class="px-3 py-1 bg-green-700 hover:bg-green-600 rounded text-xs font-bold uppercase transition">Vender</a>
                     

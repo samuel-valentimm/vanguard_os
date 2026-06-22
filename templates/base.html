@@ -30,7 +30,7 @@
             </div>
 
             <nav class="p-4 space-y-1">
-                <a href="/" class="flex items-center space-x-3 {% if request.path == '/' %}bg-white text-black{% else %}text-[#a1a1aa] hover:bg-[#18181b] hover:text-white{% endif %} px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition">
+                <a href="{{ url_for('dashboard.index') }}" class="flex items-center space-x-3 {% if request.path == '/' %}bg-white text-black{% else %}text-[#a1a1aa] hover:bg-[#18181b] hover:text-white{% endif %} px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition">
                     <span>📊</span> <span>Dashboard</span>
                 </a>
                 
