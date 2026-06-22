@@ -1,21 +1,17 @@
 # Vanguard OS
 
-Um sistema de gestão comercial dinâmico e leve, desenvolvido para resolver as necessidades reais de controle de clientes, produtos e estoque de uma loja local.
-Este projeto foi construído do zero com o objetivo de aplicar boas práticas de desenvolvimento web, separação de conceitos (frontend/backend) e persistência de dados no mundo real.
+A dynamic and lightweight business management system, developed to address real-world needs for customer, product, and inventory control for a local store. This project was built from scratch with the goal of applying web development best practices, separation of concerns (frontend/backend), and real-world data persistence.
 
----
+## Technologies Used
 
-## Tecnologias Utilizadas
+* **Backend:** Python with the Flask framework (routes, business logic, and rendering).
+* **Database:** SQLite (lightweight and relational storage via database.py).
+* **Frontend:** HTML5, CSS3, and JavaScript (focused on a clean and intuitive interface for the store operator).
 
-* **Backend:** Python com o framework **Flask** (rotas, lógica de negócios e renderização)
-* **Banco de Dados:** **SQLite** (armazenamento leve e relacional com `database.py`)
-* **Frontend:** **HTML5** e **CSS3** (com foco em uma interface limpa e intuitiva para o operador da loja)
+## Current Features
 
----
-
-## Funcionalidades Atuais
-
-* [x] Estrutura base da aplicação com Flask.
-* [x] Modelagem e criação do banco de dados relacional (`vanguard_omega.db`).
-* [x] Tela principal (`index.html`) para navegação.
-* [x] Tela de listagem e gerenciamento de clientes (`clientes.html`).
+- [x] Base application structure with Flask.
+- [x] Relational database modeling and creation (`vanguard_omega.db`).
+- [x] Integration with Supabase for cloud-based data management.
+- [x] Main dashboard (`index.html`) for navigation.
+- [x] Customer listing and management screen (`clientes.html`).
